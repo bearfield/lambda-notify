@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudWatch Alarm Sample Stack
+
+Resources:
+  # CloudWatchアラーム用のSNSトピック
+  CloudWatchAlarmForChatbotTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: cloudwatch-alarm-for-chatbot-topic
+
+  # CloudWatchアラームの定義
+  LambdaFunctionErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: test-lambda-error-for-chatbot-alarm
+      Namespace: AWS/Lambda
+      Dimensions:
+        - Name: FunctionName
+          Value: manulaly-test-function
+      MetricName: Errors
+      ComparisonOperator: GreaterThanOrEqualToThreshold  # 閾値以上
+      Period: 60  # 期間[s]
+      EvaluationPeriods: 1  # 閾値を超えた回数
+      Statistic: Maximum  # 最大
+      Threshold: 1  # 閾値
+      TreatMissingData: notBreaching  # Errorsがない場合は良好として扱う
+      AlarmActions:
+        - !Ref CloudWatchAlarmForChatbotTopic  # アラーム遷移時のアクション
+      OKActions:
+        - !Ref CloudWatchAlarmForChatbotTopic  # OK遷移時のアクション
+
+Outputs:
+  CloudWatchAlarmForChatbotTopicArn:
+    Value: !Ref CloudWatchAlarmForChatbotTopic
+    Export:
+      Name: !Sub ${AWS::StackName}-CloudWatchAlarmForChatbotTopicArn
