@@ -16,7 +16,7 @@ Resources:
       Namespace: AWS/Lambda
       Dimensions:
         - Name: FunctionName
-          Value: manulaly-test-function
+          Value: !Ref LambdaFunctionName
       MetricName: Errors
       ComparisonOperator: GreaterThanOrEqualToThreshold  # 閾値以上
       Period: 60  # 期間[s]
